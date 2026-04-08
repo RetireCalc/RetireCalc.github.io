@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="RetireCalc Thailand — Free retirement portfolio calculator with inflation-adjusted projections, asset tracking, and monthly savings planning. Available in English and Thai.">
+<meta property="og:title" content="RetireCalc Thailand">
+<meta property="og:description" content="Plan your retirement in Thailand. Project your portfolio, set goals, and see real purchasing power — free.">
+<meta property="og:type" content="website">
+<title>RetireCalc Thailand</title>
+<style>
+  :root {
+    --blue: #185FA5;
+    --blue-dark: #0C447C;
+    --blue-light: #E6F1FB;
+    --green: #3B6D11;
+    --green-light: #EAF3DE;
+    --amber: #854F0B;
+    --amber-light: #FAEEDA;
+    --red: #A32D2D;
+    --red-light: #FCEBEB;
+    --purple: #534AB7;
+    --gray-50: #F8F7F4;
+    --gray-100: #F1EFE8;
+    --gray-200: #D3D1C7;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --gray-900: #1A1A18;
+    --text: #1A1A18;
+    --text-secondary: #5F5E5A;
+    --text-hint: #888780;
+    --border: rgba(0,0,0,0.12);
+    --border-medium: rgba(0,0,0,0.22);
+    --radius: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --gray-50: #1E1E1C;
+      --gray-100: #242422;
+      --gray-200: #333330;
+      --gray-400: #888780;
+      --gray-600: #B4B2A9;
+      --gray-900: #F1EFE8;
+      --text: #F1EFE8;
+      --text-secondary: #B4B2A9;
+      --text-hint: #888780;
+      --border: rgba(255,255,255,0.1);
+      --border-medium: rgba(255,255,255,0.2);
+      --blue-light: #0C2A44;
+      --green-light: #172D08;
+      --amber-light: #2A1A04;
+      --red-light: #2A0D0D;
+    }
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Thai', sans-serif;
+    background: var(--gray-50);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* NAV */
+  nav {
+    background: #fff;
+    border-bottom: 0.5px solid var(--border);
+    position: sticky; top: 0; z-index: 100;
+  }
+  @media (prefers-color-scheme: dark) { nav { background: #1A1A18; } }
+  .nav-inner {
+    max-width: 860px; margin: 0 auto;
+    padding: 0 1.25rem;
+    height: 56px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-logo-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: var(--blue); display: flex; align-items: center; justify-content: center;
+  }
+  .nav-logo-icon svg { width: 18px; height: 18px; fill: none; stroke: #fff; stroke-width: 2; }
+  .nav-logo-text { font-size: 15px; font-weight: 600; color: var(--text); }
+  .nav-logo-text span { color: var(--blue); }
+  .lang-toggle {
+    display: flex; background: var(--gray-100); border-radius: 6px; padding: 2px; gap: 2px;
+  }
+  .lang-btn {
+    padding: 4px 12px; font-size: 13px; border: none; background: transparent;
+    border-radius: 4px; cursor: pointer; color: var(--text-secondary); font-weight: 500;
+    transition: all 0.15s;
+  }
+  .lang-btn.active { background: #fff; color: var(--text); box-shadow: var(--shadow); }
+  @media (prefers-color-scheme: dark) {
+    .lang-btn.active { background: #2C2C2A; }
+  }
+
+  /* HERO */
+  .hero {
+    background: #fff;
+    border-bottom: 0.5px solid var(--border);
+    padding: 2.5rem 1.25rem 2rem;
+    text-align: center;
+  }
+  @media (prefers-color-scheme: dark) { .hero { background: #1A1A18; } }
+  .hero h1 { font-size: 28px; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+  .hero h1 span { color: var(--blue); }
+  .hero p { font-size: 15px; color: var(--text-secondary); max-width: 520px; margin: 0 auto 1.25rem; }
+  .hero-badges { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+  .badge {
+    font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 500;
+    background: var(--blue-light); color: var(--blue);
+  }
+  .badge.green { background: var(--green-light); color: var(--green); }
+  .badge.amber { background: var(--amber-light); color: var(--amber); }
+
+  /* MAIN */
+  .main { max-width: 860px; margin: 0 auto; padding: 1.5rem 1.25rem 4rem; }
+
+  /* SECTIONS */
+  .sec {
+    background: #fff;
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow);
+  }
+  @media (prefers-color-scheme: dark) { .sec { background: #222220; } }
+  .sec-title {
+    font-size: 11px; font-weight: 600; color: var(--text-hint);
+    text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 1rem;
+  }
+  .row2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin-bottom: 12px; }
+  .row3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 14px; margin-bottom: 12px; }
+  .row4 { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 14px; margin-bottom: 12px; }
+  @media (max-width: 600px) {
+    .row2, .row3, .row4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  @media (max-width: 400px) {
+    .row2, .row3, .row4 { grid-template-columns: 1fr; }
+  }
+  label { font-size: 13px; color: var(--text-secondary); display: block; margin-bottom: 5px; }
+  input[type=number], input[type=text] {
+    width: 100%; padding: 8px 11px; font-size: 14px;
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius);
+    background: var(--gray-50); color: var(--text);
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+  input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.15); }
+
+  .asset-row { display: grid; grid-template-columns: minmax(0,2fr) minmax(0,1.2fr) minmax(0,1.2fr) 30px; gap: 8px; align-items: end; margin-bottom: 10px; }
+  .del-btn {
+    background: none; border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius); color: var(--text-secondary);
+    font-size: 18px; cursor: pointer; width: 30px; height: 36px;
+    display: flex; align-items: center; justify-content: center; padding: 0;
+    transition: background 0.15s;
+  }
+  .del-btn:hover { background: var(--red-light); color: var(--red); }
+  .add-btn {
+    font-size: 13px; padding: 7px 16px;
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius); background: none;
+    color: var(--text-secondary); cursor: pointer; margin-top: 6px;
+    transition: background 0.15s;
+  }
+  .add-btn:hover { background: var(--gray-100); }
+
+  .toggle-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .toggle-btn {
+    padding: 6px 16px; font-size: 13px; font-weight: 500;
+    border: 0.5px solid var(--border-medium);
+    border-radius: var(--radius); cursor: pointer;
+    background: none; color: var(--text-secondary);
+    transition: all 0.15s;
+  }
+  .toggle-btn.active {
+    background: var(--blue-light); color: var(--blue);
+    border-color: rgba(24,95,165,0.35);
+  }
+
+  .schedule-row { display: grid; grid-template-columns: 70px 1fr 1fr 30px; gap: 8px; align-items: end; margin-bottom: 10px; }
+
+  .calc-btn {
+    width: 100%; padding: 13px; font-size: 16px; font-weight: 600;
+    background: var(--blue); color: #fff; border: none;
+    border-radius: var(--radius-lg); cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    letter-spacing: 0.01em;
+  }
+  .calc-btn:hover { background: var(--blue-dark); }
+  .calc-btn:active { transform: scale(0.99); }
+
+  /* RESULTS */
+  .results { display: none; }
+  .results.show { display: block; }
+
+  .goal-banner {
+    border-radius: var(--radius-lg); padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem; border: 1.5px solid;
+    box-shadow: var(--shadow);
+  }
+  .goal-banner.success { background: var(--green-light); border-color: var(--green); }
+  .goal-banner.fail { background: var(--red-light); border-color: var(--red); }
+  .goal-banner-title { font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+  .goal-banner.success .goal-banner-title { color: #1E4007; }
+  .goal-banner.fail .goal-banner-title { color: #6B1515; }
+  .goal-banner-sub { font-size: 13px; line-height: 1.9; }
+  .goal-banner.success .goal-banner-sub { color: var(--green); }
+  .goal-banner.fail .goal-banner-sub { color: var(--red); }
+
+  .metric-grid { display: grid; gap: 12px; margin-bottom: 14px; }
+  .metric-grid-4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .metric-grid-3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  @media (max-width: 640px) {
+    .metric-grid-4, .metric-grid-3 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  }
+  .metric {
+    background: var(--gray-100); border-radius: var(--radius);
+    padding: 0.9rem 1rem;
+  }
+  @media (prefers-color-scheme: dark) { .metric { background: #2A2A28; } }
+  .metric-label { font-size: 12px; color: var(--text-secondary); margin-bottom: 5px; }
+  .metric-value { font-size: 20px; font-weight: 700; color: var(--text); }
+  .mv-blue { color: var(--blue); }
+  .mv-green { color: var(--green); }
+  .mv-amber { color: var(--amber); }
+  .mv-red { color: var(--red); }
+  .mv-purple { color: var(--purple); }
+
+  .chart-legend { display: flex; flex-wrap: wrap; gap: 14px; margin-bottom: 10px; font-size: 12px; color: var(--text-secondary); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .legend-dash { width: 16px; height: 3px; display: inline-block; border-radius: 1px; }
+
+  .chart-wrap { position: relative; width: 100%; }
+
+  .note-box {
+    background: var(--gray-100); border-left: 3px solid var(--blue);
+    padding: 10px 14px; font-size: 12px; color: var(--text-secondary);
+    margin-bottom: 14px; line-height: 1.75; border-radius: 0 var(--radius) var(--radius) 0;
+  }
+  @media (prefers-color-scheme: dark) { .note-box { background: #2A2A28; } }
+
+  .sched-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+  .sched-table th {
+    font-size: 11px; color: var(--text-hint); text-align: left;
+    padding: 5px 8px; border-bottom: 0.5px solid var(--border); font-weight: 600;
+  }
+  .sched-table td { padding: 6px 8px; border-bottom: 0.5px solid var(--border); color: var(--text); }
+  .sched-table tr:last-child td { border-bottom: none; }
+  .sched-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .sched-table tr:hover td { background: var(--gray-100); }
+
+  .milestone-list { font-size: 13px; color: var(--text-secondary); line-height: 2.3; }
+  .milestone-list span { color: var(--text); font-weight: 600; }
+
+  /* FOOTER */
+  footer {
+    text-align: center; padding: 2rem 1.25rem;
+    font-size: 12px; color: var(--text-hint);
+    border-top: 0.5px solid var(--border);
+  }
+  footer a { color: var(--blue); text-decoration: none; }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: var(--amber-light); border: 0.5px solid rgba(133,79,11,0.25);
+    border-radius: var(--radius); padding: 12px 16px;
+    font-size: 12px; color: var(--amber); line-height: 1.7;
+    margin-bottom: 1.25rem;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#">
+      <div class="nav-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7v10l10 5 10-5V7L12 2z"/><path d="M12 22V12"/><path d="M2 7l10 5 10-5"/></svg>
+      </div>
+      <span class="nav-logo-text">RetireCalc <span>Thailand</span></span>
+    </a>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')" id="btnEN">EN</button>
+      <button class="lang-btn" onclick="setLang('th')" id="btnTH">TH</button>
+    </div>
+  </div>
+</nav>
+
+<div class="hero">
+  <h1 data-en="Plan your <span>retirement</span> in Thailand" data-th="วางแผน<span>เกษียณ</span>ของคุณในไทย">Plan your <span>retirement</span> in Thailand</h1>
+  <p data-en="Project your portfolio, set real goals, and see your actual purchasing power — including all assets, growing income, and inflation." data-th="คำนวณพอร์ตโฟลิโอ ตั้งเป้าหมาย และดูกำลังซื้อจริง — รวมทรัพย์สินทุกประเภท รายได้ที่เพิ่มขึ้น และเงินเฟ้อ">Project your portfolio, set real goals, and see your actual purchasing power — including all assets, growing income, and inflation.</p>
+  <div class="hero-badges">
+    <span class="badge" data-en="Inflation-adjusted" data-th="ปรับตามเงินเฟ้อ">Inflation-adjusted</span>
+    <span class="badge green" data-en="All asset types" data-th="ทรัพย์สินทุกประเภท">All asset types</span>
+    <span class="badge amber" data-en="Growing income model" data-th="รายได้ที่เพิ่มขึ้น">Growing income model</span>
+    <span class="badge" data-en="Free forever" data-th="ฟรีตลอดกาล">Free forever</span>
+  </div>
+</div>
+
+<div class="main">
+
+  <div class="disclaimer" data-en="This tool is for educational and planning purposes only. It is not financial advice. Projections are based on assumptions and past performance does not guarantee future results. Please consult a qualified financial advisor before making investment decisions." data-th="เครื่องมือนี้มีวัตถุประสงค์เพื่อการศึกษาและการวางแผนเท่านั้น ไม่ใช่คำแนะนำทางการเงิน การคาดการณ์ขึ้นอยู่กับสมมติฐาน โปรดปรึกษาที่ปรึกษาการเงินที่มีคุณสมบัติเหมาะสมก่อนตัดสินใจลงทุน">
+    This tool is for educational and planning purposes only. It is not financial advice. Projections are based on assumptions and past performance does not guarantee future results. Please consult a qualified financial advisor before making investment decisions.
+  </div>
+
+  <!-- PROFILE -->
+  <div class="sec">
+    <div class="sec-title" data-en="Household profile" data-th="ข้อมูลส่วนตัว">Household profile</div>
+    <div class="row4">
+      <div><label data-en="Current age" data-th="อายุปัจจุบัน">Current age</label><input type="number" id="age" value="35" min="18" max="70"></div>
+      <div><label data-en="Retirement age" data-th="อายุเกษียณ">Retirement age</label><input type="number" id="retAge" value="60" min="40" max="80"></div>
+      <div><label data-en="Expected age at passing" data-th="อายุที่คาดว่าจะเสียชีวิต">Expected age at passing</label><input type="number" id="deathAge" value="85" min="50" max="110"></div>
+      <div><label data-en="Inflation rate (%/yr)" data-th="อัตราเงินเฟ้อ (%/ปี)">Inflation rate (%/yr)</label><input type="number" id="inflation" value="3" step="0.1" min="0" max="15"></div>
+    </div>
+  </div>
+
+  <!-- GOAL -->
+  <div class="sec">
+    <div class="sec-title" data-en="Retirement goal (in today's money)" data-th="เป้าหมายเกษียณ (มูลค่าปัจจุบัน)">Retirement goal (in today's money)</div>
+    <div class="row2">
+      <div><label data-en="Desired monthly spending in retirement (฿)" data-th="ค่าใช้จ่ายต่อเดือนที่ต้องการหลังเกษียณ (฿)">Desired monthly spending in retirement (฿)</label><input type="number" id="goalMonthly" value="80000" step="1000"></div>
+      <div><label data-en="Additional lump-sum goal at retirement (฿)" data-th="เงินก้อนเพิ่มเติมที่ต้องการตอนเกษียณ (฿)">Additional lump-sum goal at retirement (฿)</label><input type="number" id="goalLump" value="0" step="100000"></div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);" data-en="Enter in today's money — the tool inflates to future values. Spending in retirement also rises with inflation each year." data-th="ใส่เป็นมูลค่าปัจจุบัน — โปรแกรมจะปรับตามเงินเฟ้อให้อัตโนมัติ ค่าใช้จ่ายหลังเกษียณจะเพิ่มขึ้นตามเงินเฟ้อทุกปี">Enter in today's money — the tool inflates to future values. Spending in retirement also rises with inflation each year.</div>
+  </div>
+
+  <!-- INCOME -->
+  <div class="sec">
+    <div class="sec-title" data-en="Income &amp; contribution" data-th="รายได้และการออม">Income &amp; contribution</div>
+    <div class="row3">
+      <div><label data-en="Current annual income (฿)" data-th="รายได้ต่อปีปัจจุบัน (฿)">Current annual income (฿)</label><input type="number" id="income" value="1200000" step="10000"></div>
+      <div><label data-en="% of income saved / yr" data-th="% ของรายได้ที่ออมต่อปี">% of income saved / yr</label><input type="number" id="savePct" value="15" step="1" min="0" max="100"></div>
+      <div><label data-en="Investment return on savings (%/yr)" data-th="ผลตอบแทนการลงทุน (%/ปี)">Investment return on savings (%/yr)</label><input type="number" id="invReturn" value="7" step="0.1"></div>
+    </div>
+    <div class="sec-title" style="margin-top:0.5rem;" data-en="Income growth model" data-th="รูปแบบการเพิ่มรายได้">Income growth model</div>
+    <div class="toggle-row">
+      <button class="toggle-btn active" id="btnFixed" onclick="setMode('fixed')" data-en="Fixed annual raise" data-th="ขึ้นเงินเดือนคงที่ทุกปี">Fixed annual raise</button>
+      <button class="toggle-btn" id="btnCustom" onclick="setMode('custom')" data-en="Custom schedule" data-th="กำหนดเองตามช่วงเวลา">Custom schedule</button>
+    </div>
+    <div id="fixedMode">
+      <div class="row2"><div><label data-en="Annual raise (%)" data-th="อัตราขึ้นเงินเดือน (%/ปี)">Annual raise (%)</label><input type="number" id="raise" value="5" step="0.1" min="0"></div></div>
+    </div>
+    <div id="customMode" style="display:none;">
+      <div class="row2" style="margin-bottom:10px;"><div><label data-en="Base raise between milestones (%)" data-th="อัตราขึ้นเงินเดือนพื้นฐานระหว่างช่วง (%)">Base raise between milestones (%)</label><input type="number" id="baseRaise" value="3" step="0.1" min="0"></div></div>
+      <div style="display:grid;grid-template-columns:70px 1fr 1fr 30px;gap:8px;margin-bottom:8px;">
+        <span style="font-size:11px;color:var(--text-hint);" data-en="Year #" data-th="ปีที่">Year #</span>
+        <span style="font-size:11px;color:var(--text-hint);" data-en="New income (฿)" data-th="รายได้ใหม่ (฿)">New income (฿)</span>
+        <span style="font-size:11px;color:var(--text-hint);" data-en="New raise (%)" data-th="อัตราขึ้นใหม่ (%)">New raise (%)</span>
+        <span></span>
+      </div>
+      <div id="scheduleRows"></div>
+      <button class="add-btn" onclick="addSchedule()" data-en="+ add milestone" data-th="+ เพิ่มช่วงเวลา">+ add milestone</button>
+    </div>
+  </div>
+
+  <!-- ASSETS -->
+  <div class="sec">
+    <div class="sec-title" data-en="Existing assets" data-th="ทรัพย์สินที่มีอยู่">Existing assets</div>
+    <div style="display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.2fr) minmax(0,1.2fr) 30px;gap:8px;margin-bottom:8px;">
+      <span style="font-size:11px;color:var(--text-hint);" data-en="Asset name" data-th="ชื่อทรัพย์สิน">Asset name</span>
+      <span style="font-size:11px;color:var(--text-hint);" data-en="Current value (฿)" data-th="มูลค่าปัจจุบัน (฿)">Current value (฿)</span>
+      <span style="font-size:11px;color:var(--text-hint);" data-en="Annual return (%)" data-th="ผลตอบแทน (%/ปี)">Annual return (%)</span>
+      <span></span>
+    </div>
+    <div id="assetRows"></div>
+    <button class="add-btn" onclick="addAsset()" data-en="+ add asset" data-th="+ เพิ่มทรัพย์สิน">+ add asset</button>
+  </div>
+
+  <!-- POST-RETIREMENT -->
+  <div class="sec">
+    <div class="sec-title" data-en="Post-retirement portfolio return" data-th="ผลตอบแทนพอร์ตหลังเกษียณ">Post-retirement portfolio return</div>
+    <div class="row2">
+      <div><label data-en="Return on portfolio after retirement (%/yr)" data-th="ผลตอบแทนหลังเกษียณ (%/ปี)">Return on portfolio after retirement (%/yr)</label><input type="number" id="postReturn" value="4" step="0.1" min="0"></div>
+    </div>
+    <div style="font-size:12px;color:var(--text-secondary);" data-en="Use a conservative rate (e.g. 3–4%). Spending will rise with inflation each year during retirement." data-th="ใช้อัตราที่ระมัดระวัง (เช่น 3–4%) ค่าใช้จ่ายจะเพิ่มขึ้นตามเงินเฟ้อทุกปีในช่วงเกษียณ">Use a conservative rate (e.g. 3–4%). Spending will rise with inflation each year during retirement.</div>
+  </div>
+
+  <button class="calc-btn" onclick="calculate()" data-en="Calculate retirement projection" data-th="คำนวณแผนเกษียณ">Calculate retirement projection</button>
+
+  <!-- RESULTS -->
+  <div class="results" id="results" style="margin-top:1.5rem;">
+
+    <div id="goalBanner" class="goal-banner"></div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Retirement snapshot" data-th="ภาพรวมการเกษียณ">Retirement snapshot</div>
+      <div class="metric-grid metric-grid-4">
+        <div class="metric"><div class="metric-label" data-en="Total at retirement (nominal)" data-th="มูลค่ารวมเมื่อเกษียณ (ราคาอนาคต)">Total at retirement (nominal)</div><div class="metric-value mv-blue" id="rNominal">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Real purchasing power (today's ฿)" data-th="กำลังซื้อจริง (มูลค่าปัจจุบัน)">Real purchasing power (today's ฿)</div><div class="metric-value mv-green" id="rReal">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Goal required (nominal)" data-th="เป้าหมายที่ต้องการ (ราคาอนาคต)">Goal required (nominal)</div><div class="metric-value mv-amber" id="rGoal">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Surplus / shortfall (today's ฿)" data-th="ส่วนเกิน / ขาด (มูลค่าปัจจุบัน)">Surplus / shortfall (today's ฿)</div><div class="metric-value" id="rSurplus">—</div></div>
+      </div>
+      <div class="metric-grid metric-grid-4">
+        <div class="metric"><div class="metric-label" data-en="Monthly spending (today's ฿)" data-th="ค่าใช้จ่ายต่อเดือน (มูลค่าปัจจุบัน)">Monthly spending (today's ฿)</div><div class="metric-value mv-purple" id="rMonthly">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Monthly goal (today's ฿)" data-th="เป้าหมายต่อเดือน (มูลค่าปัจจุบัน)">Monthly goal (today's ฿)</div><div class="metric-value" id="rGoalMonthly">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Total contributed (savings)" data-th="เงินออมสะสมทั้งหมด">Total contributed (savings)</div><div class="metric-value" id="rContrib">—</div></div>
+        <div class="metric"><div class="metric-label" data-en="Portfolio remaining at passing" data-th="พอร์ตที่เหลือเมื่อสิ้นอายุ">Portfolio remaining at passing</div><div class="metric-value" id="rEndPort">—</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Portfolio growth (accumulation phase)" data-th="การเติบโตของพอร์ต (ช่วงสะสม)">Portfolio growth (accumulation phase)</div>
+      <div class="chart-legend">
+        <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#185FA5;"></span><span data-en="Total nominal" data-th="มูลค่ารวม (ราคาอนาคต)">Total nominal</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#3B6D11;"></span><span data-en="Real purchasing power" data-th="กำลังซื้อจริง">Real purchasing power</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dash" style="background:#854F0B;"></span><span data-en="Goal (nominal)" data-th="เป้าหมาย (ราคาอนาคต)">Goal (nominal)</span></span>
+      </div>
+      <div class="chart-wrap" style="height:300px;"><canvas id="growthChart" role="img" aria-label="Portfolio growth chart">Portfolio growth projection.</canvas></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Retirement drawdown (inflation-adjusted spending)" data-th="การใช้เงินหลังเกษียณ (ปรับตามเงินเฟ้อ)">Retirement drawdown (inflation-adjusted spending)</div>
+      <div class="chart-legend">
+        <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#534AB7;"></span><span data-en="Portfolio remaining" data-th="พอร์ตที่เหลือ">Portfolio remaining</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span class="legend-dot" style="background:#D85A30;"></span><span data-en="Annual spending (rises with inflation)" data-th="ค่าใช้จ่ายต่อปี (เพิ่มตามเงินเฟ้อ)">Annual spending (rises with inflation)</span></span>
+      </div>
+      <div class="chart-wrap" style="height:280px;"><canvas id="drawdownChart" role="img" aria-label="Retirement drawdown chart">Drawdown simulation.</canvas></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Asset breakdown at retirement" data-th="สัดส่วนทรัพย์สินเมื่อเกษียณ">Asset breakdown at retirement</div>
+      <div class="chart-legend" id="pieLegend"></div>
+      <div class="chart-wrap" style="height:240px;"><canvas id="pieChart" role="img" aria-label="Asset breakdown donut chart">Asset breakdown.</canvas></div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Monthly savings plan — year by year" data-th="แผนการออมรายเดือน — รายปี">Monthly savings plan — year by year</div>
+      <div class="note-box">
+        <span data-en="<strong>Actual monthly saving</strong> = your income × savings rate each year. <strong>Min. needed</strong> = required to still hit your goal from this point forward. Status compares the two." data-th="<strong>เงินออมต่อเดือนจริง</strong> = รายได้ × อัตราการออมในแต่ละปี <strong>ขั้นต่ำที่ต้องออม</strong> = จำนวนที่ต้องออมเพื่อให้ถึงเป้าหมาย สถานะเปรียบเทียบทั้งสองค่า"><strong>Actual monthly saving</strong> = your income × savings rate each year. <strong>Min. needed</strong> = required to still hit your goal from this point forward. Status compares the two.</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="sched-table">
+          <thead><tr>
+            <th data-en="Age" data-th="อายุ">Age</th>
+            <th style="text-align:right;" data-en="Annual income (฿)" data-th="รายได้ต่อปี (฿)">Annual income (฿)</th>
+            <th style="text-align:right;" data-en="Actual monthly saving (฿)" data-th="เงินออมต่อเดือนจริง (฿)">Actual monthly saving (฿)</th>
+            <th style="text-align:right;" data-en="Min. needed / month (฿)" data-th="ขั้นต่ำที่ต้องออม/เดือน (฿)">Min. needed / month (฿)</th>
+            <th style="text-align:right;" data-en="Status" data-th="สถานะ">Status</th>
+            <th style="text-align:right;" data-en="Portfolio value (฿)" data-th="มูลค่าพอร์ต (฿)">Portfolio value (฿)</th>
+          </tr></thead>
+          <tbody id="schedTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="sec-title" data-en="Key milestones" data-th="เหตุการณ์สำคัญ">Key milestones</div>
+      <div class="milestone-list" id="milestones"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p data-en="RetireCalc Thailand &mdash; Free retirement planning tool. Not financial advice." data-th="RetireCalc Thailand &mdash; เครื่องมือวางแผนเกษียณฟรี ไม่ใช่คำแนะนำทางการเงิน">RetireCalc Thailand &mdash; Free retirement planning tool. Not financial advice.</p>
+  <p style="margin-top:6px;"><a href="#" data-en="Back to top" data-th="กลับด้านบน">Back to top</a></p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let lang='en';
+let incomeMode='fixed';
+let charts={};
+const PALETTE=['#185FA5','#3B6D11','#854F0B','#A32D2D','#534AB7','#0F6E56','#993C1D','#888780'];
+
+const T={
+  onTrack:{en:'On track',th:'เป็นไปตามแผน'},
+  aheadGoal:{en:'Ahead of goal',th:'เกินเป้าหมาย'},
+  retirement:{en:'Retirement',th:'เกษียณ'},
+  shortBy:{en:'Short by',th:'ขาด'},
+  perMo:{en:'/mo',th:'/เดือน'},
+  goalAchievable:{en:'Goal achievable',th:'บรรลุเป้าหมายได้'},
+  goalNotReachable:{en:'Goal not yet reachable',th:'ยังไม่บรรลุเป้าหมาย'},
+  portfolioAt:{en:'Portfolio at retirement:',th:'พอร์ตเมื่อเกษียณ:'},
+  goalRequired:{en:'Goal required:',th:'เป้าหมายที่ต้องการ:'},
+  surplusToday:{en:"Surplus in today's ฿:",th:'ส่วนเกินมูลค่าปัจจุบัน:'},
+  shortfallToday:{en:"Shortfall in today's ฿:",th:'ส่วนขาดมูลค่าปัจจุบัน:'},
+  canSpend:{en:'You can spend',th:'คุณสามารถใช้จ่ายได้'},
+  todayMoney:{en:"in today's money",th:'ในมูลค่าปัจจุบัน'},
+  aboveGoal:{en:'above your goal',th:'เกินกว่าเป้าหมาย'},
+  portAtAge:{en:'Portfolio at age',th:'พอร์ตที่อายุ'},
+  fullyUsed:{en:'฿0 (fully used)',th:'฿0 (ใช้หมดแล้ว)'},
+  canOnlyFund:{en:'You can only fund',th:'คุณสามารถจ่ายได้เพียง'},
+  vsGoal:{en:'vs goal of',th:'เทียบกับเป้าหมาย'},
+  consider:{en:'Consider: increasing savings rate, delaying retirement, or improving asset returns.',th:'พิจารณา: เพิ่มอัตราการออม เลื่อนอายุเกษียณ หรือปรับปรุงผลตอบแทนสินทรัพย์'},
+  reached25:{en:'reached 25% of goal',th:'ถึง 25% ของเป้าหมาย'},
+  reached50:{en:'reached 50% of goal',th:'ถึง 50% ของเป้าหมาย'},
+  crossed:{en:'crossed',th:'ผ่าน'},
+  retireWith:{en:'retire with',th:'เกษียณด้วย'},
+  todayBaht:{en:"today's ฿",th:'มูลค่าปัจจุบัน'},
+  monthlySpend:{en:'monthly spending',th:'ค่าใช้จ่ายต่อเดือน'},
+  todayMoney2:{en:"today's money, rising with inflation each year",th:'มูลค่าปัจจุบัน เพิ่มขึ้นตามเงินเฟ้อทุกปี'},
+  portRemaining:{en:'portfolio remaining',th:'พอร์ตที่เหลือ'},
+  bequestBuffer:{en:'(bequest / buffer)',th:'(มรดก / ส่วนสำรอง)'},
+  portDepleted:{en:'portfolio depleted at this age — consider reducing spending or increasing savings',th:'พอร์ตหมดที่อายุนี้ — พิจารณาลดค่าใช้จ่ายหรือเพิ่มการออม'},
+  investSavings:{en:'Investments (savings)',th:'การลงทุน (เงินออม)'},
+  ageLabel:{en:'Age',th:'อายุ'},
+};
+
+function t(key){ return T[key]?T[key][lang]||T[key]['en']:''; }
+
+function setLang(l){
+  lang=l;
+  document.getElementById('btnEN').className='lang-btn'+(l==='en'?' active':'');
+  document.getElementById('btnTH').className='lang-btn'+(l==='th'?' active':'');
+  document.querySelectorAll('[data-en]').forEach(el=>{
+    const val=el.getAttribute('data-'+l)||el.getAttribute('data-en');
+    if(el.tagName==='INPUT'||el.tagName==='BUTTON') el.textContent=val;
+    else el.innerHTML=val;
+  });
+}
+
+function setMode(m){
+  incomeMode=m;
+  document.getElementById('fixedMode').style.display=m==='fixed'?'':'none';
+  document.getElementById('customMode').style.display=m==='custom'?'':'none';
+  document.getElementById('btnFixed').className='toggle-btn'+(m==='fixed'?' active':'');
+  document.getElementById('btnCustom').className='toggle-btn'+(m==='custom'?' active':'');
+}
+
+function addAsset(name='',value='',ret=''){
+  const d=document.getElementById('assetRows');
+  const row=document.createElement('div');
+  row.className='asset-row';
+  row.innerHTML=`
+    <div><input type="text" placeholder="${lang==='th'?'ชื่อทรัพย์สิน':'Asset name'}" value="${name}" style="width:100%;padding:8px 11px;font-size:14px;border:0.5px solid var(--border-medium);border-radius:var(--radius);background:var(--gray-50);color:var(--text);"></div>
+    <div><input type="number" placeholder="${lang==='th'?'มูลค่า (฿)':'Value (฿)'}" value="${value}" step="10000" style="width:100%;"></div>
+    <div><input type="number" placeholder="${lang==='th'?'ผลตอบแทน %':'Return %'}" value="${ret}" step="0.1" style="width:100%;"></div>
+    <button class="del-btn" onclick="this.parentElement.remove()">×</button>`;
+  d.appendChild(row);
+}
+
+function addSchedule(){
+  const d=document.getElementById('scheduleRows');
+  const row=document.createElement('div');
+  row.className='schedule-row';
+  row.innerHTML=`
+    <div><label style="font-size:11px;color:var(--text-hint);">${lang==='th'?'ปีที่':'Year #'}</label><input type="number" placeholder="5" min="1" style="width:100%;"></div>
+    <div><label style="font-size:11px;color:var(--text-hint);">${lang==='th'?'รายได้ใหม่ (฿)':'New income (฿)'}</label><input type="number" placeholder="1800000" step="10000" style="width:100%;"></div>
+    <div><label style="font-size:11px;color:var(--text-hint);">${lang==='th'?'อัตราขึ้นใหม่ (%)':'New raise (%)'}</label><input type="number" placeholder="5" step="0.1" style="width:100%;"></div>
+    <button class="del-btn" onclick="this.parentElement.remove()" style="margin-top:18px;">×</button>`;
+  d.appendChild(row);
+}
+
+function getAssets(){
+  return Array.from(document.getElementById('assetRows').querySelectorAll('.asset-row')).map(r=>{
+    const inp=r.querySelectorAll('input');
+    return {name:inp[0].value||'Asset',value:parseFloat(inp[1].value)||0,ret:parseFloat(inp[2].value)||0};
+  }).filter(a=>a.value>0);
+}
+
+function getScheduleMap(){
+  return Object.fromEntries(
+    Array.from(document.getElementById('scheduleRows').querySelectorAll('.schedule-row')).map(r=>{
+      const inp=r.querySelectorAll('input');
+      return [parseInt(inp[0].value)||0,{income:parseFloat(inp[1].value)||0,raise:parseFloat(inp[2].value)/100||0}];
+    }).filter(([y])=>y>0)
+  );
+}
+
+function fmt(n){
+  const abs=Math.abs(n),sign=n<0?'-':'';
+  if(abs>=1e6) return sign+'฿'+(abs/1e6).toFixed(2)+'M';
+  if(abs>=1e3) return sign+'฿'+(abs/1e3).toFixed(0)+'k';
+  return sign+'฿'+Math.round(abs).toLocaleString();
+}
+function fmtFull(n){return (n<0?'-':'')+'฿'+Math.abs(Math.round(n)).toLocaleString();}
+function destroyChart(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+
+function calcGoalPV(goalAnnualFuture,postReturn,inflation,retYears){
+  if(Math.abs(postReturn-inflation)<1e-6) return goalAnnualFuture*retYears;
+  const x=(1+inflation)/(1+postReturn);
+  return goalAnnualFuture*(1-Math.pow(x,retYears))/(1-x);
+}
+
+function calculate(){
+  const age=parseInt(document.getElementById('age').value)||35;
+  const retAge=parseInt(document.getElementById('retAge').value)||60;
+  const deathAge=parseInt(document.getElementById('deathAge').value)||85;
+  const inflation=parseFloat(document.getElementById('inflation').value)/100||0.03;
+  const income0=parseFloat(document.getElementById('income').value)||1200000;
+  const savePct=parseFloat(document.getElementById('savePct').value)/100||0.15;
+  const invReturn=parseFloat(document.getElementById('invReturn').value)/100||0.07;
+  const postReturn=parseFloat(document.getElementById('postReturn').value)/100||0.04;
+  const goalMonthly=parseFloat(document.getElementById('goalMonthly').value)||80000;
+  const goalLump=parseFloat(document.getElementById('goalLump').value)||0;
+  const raise=parseFloat(document.getElementById('raise').value)/100||0.05;
+  const baseRaise=parseFloat(document.getElementById('baseRaise').value)/100||0.03;
+  const accYears=retAge-age;
+  const retYears=deathAge-retAge;
+  if(accYears<=0){alert(lang==='th'?'อายุเกษียณต้องมากกว่าอายุปัจจุบัน':'Retirement age must exceed current age.');return;}
+  if(retYears<=0){alert(lang==='th'?'อายุที่คาดว่าจะเสียชีวิตต้องมากกว่าอายุเกษียณ':'Expected passing age must exceed retirement age.');return;}
+
+  const assets=getAssets();
+  const schedMap=incomeMode==='custom'?getScheduleMap():{};
+  const goalAnnualFuture=goalMonthly*12*Math.pow(1+inflation,accYears);
+  const goalLumpFuture=goalLump*Math.pow(1+inflation,accYears);
+  const totalGoalNominal=calcGoalPV(goalAnnualFuture,postReturn,inflation,retYears)+goalLumpFuture;
+
+  let invPortfolio=0,assetVals=assets.map(a=>a.value),curIncome=income0;
+  let curRaise=incomeMode==='fixed'?raise:baseRaise;
+  let totalContrib=0;
+  const labels=[],nomArr=[],realArr=[],goalArr=[];
+
+  for(let y=0;y<=accYears;y++){
+    if(y>0){
+      if(incomeMode==='custom'&&schedMap[y]){
+        if(schedMap[y].income>0) curIncome=schedMap[y].income;
+        if(schedMap[y].raise>0) curRaise=schedMap[y].raise;
+        else curIncome*=(1+curRaise);
+      } else { curIncome*=(1+(incomeMode==='fixed'?raise:curRaise)); }
+    }
+    const contrib=y===0?0:curIncome*savePct;
+    totalContrib+=contrib;
+    invPortfolio=invPortfolio*(1+invReturn)+contrib;
+    assetVals=assetVals.map((v,i)=>y===0?v:v*(1+assets[i].ret/100));
+    const totalNom=invPortfolio+assetVals.reduce((s,v)=>s+v,0);
+    labels.push(t('ageLabel')+' '+(age+y));
+    nomArr.push(Math.round(totalNom));
+    realArr.push(Math.round(totalNom/Math.pow(1+inflation,y)));
+    goalArr.push(Math.round(totalGoalNominal));
+  }
+
+  const finalNominal=nomArr[accYears],finalReal=realArr[accYears];
+  const finalInv=Math.round(invPortfolio);
+  const finalAssetTotals=assetVals.map(v=>Math.round(v));
+  const finalRealGoal=totalGoalNominal/Math.pow(1+inflation,accYears);
+  const surplus=finalReal-finalRealGoal;
+  const goalReached=finalNominal>=totalGoalNominal;
+  const spendRatio=finalNominal/totalGoalNominal;
+  const availableMonthlyReal=goalMonthly*spendRatio;
+
+  const ddLabels=[],ddPort=[],ddSpend=[];
+  let port=finalNominal-goalLumpFuture,depleted=false,depletedAge=-1;
+  for(let y=0;y<=retYears;y++){
+    ddLabels.push(t('ageLabel')+' '+(retAge+y));
+    const annualSpend=y===0?0:goalAnnualFuture*Math.pow(1+inflation,y-1);
+    if(y>0){
+      port=port*(1+postReturn)-annualSpend;
+      if(port<0&&!depleted){depleted=true;depletedAge=retAge+y;}
+    }
+    ddPort.push(Math.max(0,Math.round(port)));
+    ddSpend.push(y===0?0:Math.round(annualSpend));
+  }
+  const endPort=Math.round(Math.max(0,port));
+
+  const banner=document.getElementById('goalBanner');
+  banner.className='goal-banner '+(goalReached?'success':'fail');
+  if(goalReached){
+    banner.innerHTML=`<div class="goal-banner-title">${t('goalAchievable')}</div>
+      <div class="goal-banner-sub">
+        ${t('portfolioAt')} <strong>${fmt(finalNominal)}</strong> &nbsp;|&nbsp; ${t('goalRequired')} <strong>${fmt(totalGoalNominal)}</strong><br>
+        ${t('surplusToday')} <strong>${fmt(surplus)}</strong> &nbsp;|&nbsp; ${t('canSpend')} <strong>${fmtFull(Math.round(availableMonthlyReal))}${t('perMo')}</strong> ${t('todayMoney')} — <strong>${fmtFull(Math.round(availableMonthlyReal-goalMonthly))}</strong> ${t('aboveGoal')}.<br>
+        ${t('portAtAge')} ${deathAge}: <strong>${endPort>0?fmt(endPort):t('fullyUsed')}</strong>
+      </div>`;
+  } else {
+    banner.innerHTML=`<div class="goal-banner-title">${t('goalNotReachable')}</div>
+      <div class="goal-banner-sub">
+        ${t('portfolioAt')} <strong>${fmt(finalNominal)}</strong> &nbsp;|&nbsp; ${t('goalRequired')} <strong>${fmt(totalGoalNominal)}</strong><br>
+        ${t('shortfallToday')} <strong>${fmt(Math.abs(surplus))}</strong> &nbsp;|&nbsp; ${t('canOnlyFund')} <strong>${fmtFull(Math.round(availableMonthlyReal))}${t('perMo')}</strong> ${t('vsGoal')} <strong>${fmtFull(goalMonthly)}${t('perMo')}</strong>.<br>
+        ${t('consider')}
+      </div>`;
+  }
+
+  document.getElementById('rNominal').textContent=fmt(finalNominal);
+  document.getElementById('rReal').textContent=fmt(finalReal);
+  document.getElementById('rGoal').textContent=fmt(totalGoalNominal);
+  document.getElementById('rSurplus').textContent=(surplus>=0?'+':'')+fmt(surplus);
+  document.getElementById('rSurplus').className='metric-value '+(surplus>=0?'mv-green':'mv-red');
+  document.getElementById('rMonthly').textContent=fmtFull(Math.round(availableMonthlyReal))+t('perMo');
+  document.getElementById('rGoalMonthly').textContent=fmtFull(goalMonthly)+t('perMo');
+  document.getElementById('rContrib').textContent=fmt(totalContrib);
+  document.getElementById('rEndPort').textContent=endPort>0?fmt(endPort):(lang==='th'?'หมดพอร์ต':'Depleted');
+  document.getElementById('rEndPort').className='metric-value '+(endPort>100000?'mv-green':'mv-red');
+
+  destroyChart('growthChart');
+  charts['growthChart']=new Chart(document.getElementById('growthChart'),{
+    type:'line',
+    data:{labels,datasets:[
+      {label:'Total nominal',data:nomArr,borderColor:'#185FA5',backgroundColor:'rgba(24,95,165,0.07)',fill:true,tension:0.3,pointRadius:0,borderWidth:2},
+      {label:'Real',data:realArr,borderColor:'#3B6D11',backgroundColor:'rgba(59,109,17,0.06)',fill:true,tension:0.3,pointRadius:0,borderWidth:2},
+      {label:'Goal',data:goalArr,borderColor:'#854F0B',borderDash:[6,4],borderWidth:1.5,pointRadius:0,fill:false}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'฿'+ctx.parsed.y.toLocaleString()}}},scales:{x:{ticks:{autoSkip:true,maxTicksLimit:8,color:'#888780'},grid:{display:false}},y:{ticks:{callback:v=>fmt(v),color:'#888780'},grid:{color:'rgba(136,135,128,0.12)'}}}}
+  });
+
+  destroyChart('drawdownChart');
+  charts['drawdownChart']=new Chart(document.getElementById('drawdownChart'),{
+    type:'bar',
+    data:{labels:ddLabels,datasets:[
+      {label:'Portfolio',data:ddPort,backgroundColor:'rgba(83,74,183,0.13)',borderColor:'#534AB7',borderWidth:1.5,type:'line',fill:true,tension:0.3,pointRadius:0,yAxisID:'y'},
+      {label:'Spending',data:ddSpend,backgroundColor:'rgba(216,90,48,0.22)',borderColor:'#D85A30',borderWidth:0,type:'bar',yAxisID:'y'}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>'฿'+ctx.parsed.y.toLocaleString()}}},scales:{x:{ticks:{autoSkip:true,maxTicksLimit:8,color:'#888780'},grid:{display:false}},y:{ticks:{callback:v=>fmt(v),color:'#888780'},grid:{color:'rgba(136,135,128,0.12)'}}}}
+  });
+
+  const pieLabels=[t('investSavings'),...assets.map(a=>a.name)];
+  const pieData=[finalInv,...finalAssetTotals];
+  const pieColors=PALETTE.slice(0,pieLabels.length);
+  const total=pieData.reduce((s,v)=>s+v,0);
+  document.getElementById('pieLegend').innerHTML=pieLabels.map((l,i)=>`<span style="display:flex;align-items:center;gap:5px;"><span style="width:10px;height:10px;border-radius:2px;background:${pieColors[i]};display:inline-block;"></span>${l} (${Math.round(pieData[i]/total*100)}%)</span>`).join('');
+  destroyChart('pieChart');
+  charts['pieChart']=new Chart(document.getElementById('pieChart'),{
+    type:'doughnut',
+    data:{labels:pieLabels,datasets:[{data:pieData,backgroundColor:pieColors,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.label+': ฿'+ctx.parsed.toLocaleString()+' ('+Math.round(ctx.parsed/total*100)+'%)'}}}}
+  });
+
+  const tbody=document.getElementById('schedTable');
+  tbody.innerHTML='';
+  let simIncome=income0,simRaise=incomeMode==='fixed'?raise:baseRaise;
+  for(let y=0;y<=accYears;y++){
+    if(y>0){
+      if(incomeMode==='custom'&&schedMap[y]){
+        if(schedMap[y].income>0) simIncome=schedMap[y].income;
+        if(schedMap[y].raise>0) simRaise=schedMap[y].raise;
+        else simIncome*=(1+simRaise);
+      } else { simIncome*=(1+(incomeMode==='fixed'?raise:simRaise)); }
+    }
+    const portNow=nomArr[y],yearsLeft=accYears-y;
+    const actualMonthly=Math.round(simIncome*savePct/12);
+    let neededMonthly=0;
+    if(yearsLeft>0){
+      const fvGoal=totalGoalNominal-portNow*Math.pow(1+invReturn,yearsLeft);
+      if(fvGoal>0){
+        const annFV=(Math.pow(1+invReturn,yearsLeft)-1)/invReturn;
+        neededMonthly=Math.round(fvGoal/annFV/12);
+      }
+    }
+    const onTrack=actualMonthly>=neededMonthly||neededMonthly===0;
+    let statusText,statusColor;
+    if(yearsLeft===0){statusText=t('retirement');statusColor='#185FA5';}
+    else if(neededMonthly===0){statusText=t('aheadGoal');statusColor='#3B6D11';}
+    else if(onTrack){statusText=t('onTrack');statusColor='#3B6D11';}
+    else{statusText=t('shortBy')+' '+fmtFull(neededMonthly-actualMonthly)+t('perMo');statusColor='#A32D2D';}
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td>${age+y}</td>
+      <td class="num">${fmtFull(Math.round(simIncome))}</td>
+      <td class="num" style="font-weight:600;">${fmtFull(actualMonthly)}</td>
+      <td class="num" style="color:${neededMonthly===0&&yearsLeft>0?'#3B6D11':'var(--text-secondary)'};">${yearsLeft===0?'—':neededMonthly===0?fmtFull(0):fmtFull(neededMonthly)}</td>
+      <td style="text-align:right;font-size:12px;font-weight:600;color:${statusColor};">${statusText}</td>
+      <td class="num">${fmtFull(nomArr[y])}</td>`;
+    tbody.appendChild(tr);
+  }
+
+  let mHTML='';
+  const m25=nomArr.findIndex(v=>v>=totalGoalNominal*0.25);
+  const m50=nomArr.findIndex(v=>v>=totalGoalNominal*0.5);
+  const m1M=nomArr.findIndex(v=>v>=1e6);
+  const m10M=nomArr.findIndex(v=>v>=1e7);
+  const m100M=nomArr.findIndex(v=>v>=1e8);
+  if(m25>=0) mHTML+=`<div>${t('ageLabel')} <span>${age+m25}</span>: ${t('reached25')} — <span>${fmt(nomArr[m25])}</span></div>`;
+  if(m50>=0) mHTML+=`<div>${t('ageLabel')} <span>${age+m50}</span>: ${t('reached50')} — <span>${fmt(nomArr[m50])}</span></div>`;
+  if(m1M>=0) mHTML+=`<div>${t('ageLabel')} <span>${age+m1M}</span>: ${t('crossed')} <span>฿1 million</span></div>`;
+  if(m10M>=0) mHTML+=`<div>${t('ageLabel')} <span>${age+m10M}</span>: ${t('crossed')} <span>฿10 million</span></div>`;
+  if(m100M>=0) mHTML+=`<div>${t('ageLabel')} <span>${age+m100M}</span>: ${t('crossed')} <span>฿100 million</span></div>`;
+  mHTML+=`<div>${t('ageLabel')} <span>${retAge}</span>: ${t('retireWith')} <span>${fmt(finalNominal)}</span> (= <span>${fmt(finalReal)}</span> ${t('todayBaht')})</div>`;
+  mHTML+=`<div>${t('ageLabel')} <span>${retAge}</span>: ${t('monthlySpend')} = <span>${fmtFull(Math.round(availableMonthlyReal))}${t('perMo')}</span> ${t('todayMoney2')}</div>`;
+  if(depleted) mHTML+=`<div style="color:#A32D2D;">${t('ageLabel')} <span style="color:#A32D2D;">${depletedAge}</span>: <span style="color:#A32D2D;">${t('portDepleted')}</span></div>`;
+  else mHTML+=`<div>${t('ageLabel')} <span>${deathAge}</span>: ${t('portRemaining')} = <span>${fmt(endPort)}</span> ${t('bequestBuffer')}</div>`;
+  document.getElementById('milestones').innerHTML=mHTML;
+
+  document.getElementById('results').classList.add('show');
+  setTimeout(()=>document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'}),100);
+}
+
+// Init
+addAsset(lang==='th'?'การลงทุน (กองทุน/หุ้น)':'Investment portfolio (funds/stocks)','500000','7');
+addAsset(lang==='th'?'อสังหาริมทรัพย์':'Real estate equity','2000000','4');
+addSchedule();
+</script>
+</body>
+</html>
